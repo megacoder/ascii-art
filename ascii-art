@@ -1,0 +1,83 @@
+#!/usr/bin/python
+# vim: noet sw=4 ts=4
+
+import	sys
+import	os
+import	re
+
+class	AsciiArt( object ):
+
+	def	__init__( self ):
+		return
+
+	def	do_file( self, f = sys.stdin ):
+		phrase = f.readline().rstrip()
+		words = phrase.split()
+		columns = len( words )
+		labels = []
+		for i in range( columns ):
+			labels.append(
+				f.readline().rstrip()
+			)
+		for line in self.process( phrase, labels ):
+			print line
+		return
+
+	def	process( self, phrase = '  4a  4bb   4    4xxxx', labels = [
+		'First',
+		'Second',
+		'Third',
+		'Fourth'
+	] ):
+		# Give them the model line first
+		phrase = phrase.expandtabs()
+		yield phrase
+		pattern = re.compile(
+			r'((\s*)(\S+))'
+		)
+		fields = re.findall( pattern, phrase )
+		fmts = []
+		rightmost = []
+		column = 0
+		for field in fields:
+			literal, leadin, title = field[0], field[1], field[2]
+			column += len(literal)
+			rightmost.append( column )
+			padding = len(leadin) + int(len(title)/2)
+			fmts.append(
+				(' ' * padding) + '{0}'
+			)
+		n = len( fmts )
+		# Line of up arrows second
+		line = ''
+		for i in range( n ):
+			line += fmts[i].format( '^' )
+			line += (' ' * (rightmost[i] - len(line) ) )
+		yield line
+		# Line of bars under the up arrow bar
+		bars  = line.replace( '^', '|' )
+		bars += ( ' ' * (len(phrase)-len(bars)+2))
+		yield bars
+		# Then labels with enough bars and indents
+		for i in range( n ):
+			rbar = bars.rfind( '|' )
+			left = bars[:rbar]
+			right = bars[rbar:].replace( '+', '-' )
+			right = right.replace( '|', '+' )
+			right = right.replace( ' ', '-' )
+			bars = left + right
+			yield bars + '  ' + labels[n - i - 1].strip()
+		return
+
+if __name__ == '__main__':
+	args = sys.argv[ 1: ]
+	argc = len( args )
+	if argc == 0:
+		aa = AsciiArt()
+		aa.do_file( sys.stdin )
+	else:
+		for arg in args:
+			aa = AsciiArt()
+			with( open( arg ) ) as f:
+				aa.do_file( f )
+	exit( 0 )
