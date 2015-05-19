@@ -12,12 +12,12 @@ do this:
 
 to produce this:
 
-$ ascii-art sample
- First  Second  Third
-   ^       ^      ^
-   |       |      |
-   |       |      +----  Column the third.
-   |       +-----------  Column the second.
-   +-------------------  Column the first.
+        $ ascii-art sample
+         First  Second  Third
+           ^       ^      ^
+           |       |      |
+           |       |      +----  Column the third.
+           |       +-----------  Column the second.
+           +-------------------  Column the first.
 
 Yeah.  Retro.  I can dig it.
